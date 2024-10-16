@@ -1,7 +1,7 @@
 <template>
   <Teleport :to="teleport === false ? undefined : teleport" :disabled="disabled || teleport === false">
     <div :class="n()" v-if="open">
-      <slot />
+      <div :class="n('content')"><slot /></div>
       <div :class="n('mask')" v-if="showMask"></div>
     </div>
   </Teleport>
@@ -24,17 +24,25 @@ export default defineComponent({
     const current = computed(() => props.current)
     const showMask = computed(() => open.value && props.mask)
     const { disabled } = useTeleport()
-    const { bindStep } = useStep()
+    const { total, bindStep } = useStep()
 
     const tourProvider: TourProvider = {
       current,
+      total,
       clickStep,
+      finish,
     }
 
     bindStep(tourProvider)
 
     function clickStep(index: number) {
+      call(props['onUpdate:current'], index)
       call(props.onChange, index)
+    }
+
+    function finish() {
+      call(props['onUpdate:open'], false)
+      call(props.onFinish)
     }
 
     return { disabled, showMask, n, classes }
@@ -44,4 +52,5 @@ export default defineComponent({
 
 <style lang="less">
 @import '../styles/common';
+@import './tour';
 </style>

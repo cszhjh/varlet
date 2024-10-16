@@ -11,13 +11,35 @@
       </div>
     </slot>
     <div :class="n('footer')">
-      <div :class="n('indicators')"></div>
-      <div :class="n('buttons')"></div>
+      <div :class="n('indicators')">
+        <span v-for="item in total" :key="item"></span>
+      </div>
+      <div :class="n('buttons')">
+        <var-button
+          v-if="index > 0"
+          :class="classes(n('button'), n('previous-button'))"
+          outline
+          size="small"
+          @click="handlePrev"
+        >
+          Previous
+        </var-button>
+        <var-button
+          v-if="index <= total - 1"
+          :class="classes(n('button'), n('next-button'))"
+          type="primary"
+          size="small"
+          @click="handleNext"
+        >
+          {{ index === total - 1 ? 'Finish' : 'Next' }}
+        </var-button>
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
+import VarButton from '../button'
 import { computed, defineComponent, type ComputedRef } from 'vue'
 import { props } from './props'
 import { useTour, type StepProvider } from './provide'
@@ -27,25 +49,37 @@ const { name, n, classes } = createNamespace('tour-step')
 
 export default defineComponent({
   name,
+  components: {
+    VarButton,
+  },
   props,
-  setup(props) {
+  setup() {
     const { index, tour, bindTour } = useTour()
-    const { current, clickStep } = tour
+    const { current, total, clickStep, finish } = tour
     const isCurrent: ComputedRef<boolean> = computed(() => current.value === index.value)
 
     const stepProvider: StepProvider = { index }
 
     bindTour(stepProvider)
 
-    function click() {
-      return clickStep(index.value)
+    function handlePrev() {
+      clickStep(index.value - 1)
     }
 
-    return { index, isCurrent, n, classes, click }
+    function handleNext() {
+      if (index.value === total.value - 1) {
+        finish()
+      } else {
+        clickStep(index.value + 1)
+      }
+    }
+
+    return { index, total, isCurrent, n, classes, handlePrev, handleNext }
   },
 })
 </script>
 
 <style lang="less">
 @import '../styles/common';
+@import './tourStep';
 </style>

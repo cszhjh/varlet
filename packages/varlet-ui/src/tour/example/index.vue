@@ -4,6 +4,7 @@ import { ref } from 'vue'
 import { t, use } from './locale'
 
 const open = ref(false)
+const current = ref(0)
 const ref1 = ref()
 const ref2 = ref()
 const ref3 = ref()
@@ -23,7 +24,7 @@ onThemeChange()
     <var-button ref="ref3">More</var-button>
   </var-space>
 
-  <var-tour v-model:open="open">
+  <var-tour v-model:open="open" v-model:current="current">
     <var-tour-step :target="ref1?.$el" title="Upload File">
       <img style="width: 240px" src="https://varletjs.org/varlet_icon.png" alt="tour.png" />
       <div>Put you files here.</div>

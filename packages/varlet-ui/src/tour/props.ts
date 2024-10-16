@@ -19,4 +19,5 @@ export const props = {
   onFinish: defineListenerProp<() => void>(),
   onChange: defineListenerProp<(current: number) => void>(),
   'onUpdate:open': defineListenerProp<(open: boolean) => void>(),
+  'onUpdate:current': defineListenerProp<(current: number) => void>(),
 }
